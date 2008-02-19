@@ -1,5 +1,5 @@
 #labels Featured,Phase-QA
-===dbcached 的故障转移功能、设计方向以及与 Memcachedb 的区别之处===
+===dbcached 的故障转移支持、设计方向以及与 Memcachedb 的不同之处===
 
 dbcached 与新浪的另一开源产品 Memcachedb 一样，都支持 Memcached 协议，具有持久化存储功能，但两者有不同之处：
 
