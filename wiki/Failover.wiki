@@ -1,14 +1,18 @@
 #labels Featured,Phase-QA
-====dbcached 的故障转移功能、设计方向以及与 Memcachedb 的区别之处====
+===dbcached 的故障转移功能、设计方向以及与 Memcachedb 的区别之处===
 
 dbcached 与新浪的另一开源产品 Memcachedb 一样，都支持 Memcached 协议，具有持久化存储功能，但两者有不同之处：
 
-1、故障转移
+====1、故障转移====
+
 先引用 memcached 官方网站和 PHP 手册中的两段话：
+
 http://www.danga.com/memcached/
+
 If a host goes down, the API re-maps that dead host's requests onto the servers that are available.
 
 http://cn.php.net/manual/zh/function.Memcache-addServer.php
+
 Failover may occur at any stage in any of the methods, as long as other servers are available the request the user won't notice. Any kind of socket or Memcached server level errors (except out-of-memory) may trigger the failover. Normal client errors such as adding an existing key will not trigger a failover. 
 
 再以一个例子来说明：
@@ -30,5 +34,6 @@ Memcache 客户端的 addserver 具有故障转移机制，当 addserver 了4台
 
 Memcachedb 可以保证数据的持久化存储，但目前还没有解决 Memcache 服务器池故障转移导致的数据丢失。而 dbcached 可以，它在未命中时会请求后端的 NMDB 取回数据。在接下来的版本中，dbcached 后端的 NMDB 将设计为两台，进行互备，届时无论前端 dbcached 中的某几台挂了还是后端 NMDB 中的一台挂了，数据都不会丢失。
 
-2、设计方向
+====2、设计方向====
+
 dbcached 和 Memcachedb 的设计方向不同，dbcached 的设计方向是发挥 Memcached 的内存缓存性能优势，使之成为一个具有“故障转移”、“数据持久化存储”、“多服务器同时读写”的高并发内存缓存系统，它是围绕 Memcached 进行开发的。而 Memcachedb 只使用了 Memcached 的协议和网络层，抛弃了 Memcached 的内存管理部分，使用 Berkeley DB 数据库自身的缓存来实现，是围绕 Berkeley DB 进行开发的，目前支持类似 MySQL 主辅库同步的方式实现读写分离，支持“主服务器可读写、辅助服务器只读”模式。
